@@ -17,11 +17,13 @@ function processBase64Image(base64data)
         % Decode Base64 data to binary
         binarydata = matlab.net.base64decode(base64data);
         
-        % Define temporary file name for saving image
-        tempImgFileName = 'tempimg.png';
+        % Define file name for saving image
+        timestamp = datetime('now');
+        disp(timestamp);
+        imgFileName = str(timestamp);
         
-        % Open temporary file for writing binary data
-        tempID = fopen(tempImgFileName, 'wb');
+        % Open file for writing binary data        
+        tempID = fopen(imgFileName, 'wb');        
         
         % Write binary image data to temporary file
         fwrite(tempID, binarydata, 'uint8');
@@ -30,7 +32,7 @@ function processBase64Image(base64data)
         fclose(tempID);
         
         % Read image from temporary file
-        outputimg = imread(tempImgFileName);
+        outputimg = imread(imgFileName);
         
         % Display image in figure window
         imshow(outputimg);
@@ -52,14 +54,14 @@ while true
     base64Buffer = strcat(base64Buffer, data);
     
     % Check if data contains end-of-image marker (e.g., "END_OF_IMAGE")
-    if contains(base64Buffer, "END_OF_IMAGE")
+    if contains(base64Buffer, "\n")
         % extract Base64 image data up to marker
-        imageData = extractBefore(base64Buffer, "END_OF_IMAGE");
+        imageData = extractBefore(base64Buffer, "\n");
         
         % Process Base64 image data
         processBase64Image(imageData);
         
         % Clear buffer
-        base64Buffer = extractAfter(base64Buffer, "END_OF_IMAGE");
+        base64Buffer = extractAfter(base64Buffer, "\n");
     end
 end

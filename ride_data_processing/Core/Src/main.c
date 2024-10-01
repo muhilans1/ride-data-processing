@@ -65,7 +65,7 @@ static void MX_USB_OTG_FS_PCD_Init(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t tx_buff[]={"1,2,3,4,5,6,7,8,9"};
 /* USER CODE END 0 */
 
 /**
@@ -116,6 +116,8 @@ int main(void)
     /* USER CODE END WHILE */
 
     /* USER CODE BEGIN 3 */
+	  HAL_UART_Transmit(&huart1, tx_buff, 20, 1000);
+	  HAL_Delay(10000);
   }
   /* USER CODE END 3 */
 }

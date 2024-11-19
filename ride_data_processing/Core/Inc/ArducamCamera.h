@@ -11,6 +11,7 @@
 #ifndef __ARDUCAM_H
 #define __ARDUCAM_H
 #include <stdint.h>
+
 /**
  * @file ArducamCamera.h
  * @author Arducam
@@ -28,29 +29,27 @@ extern "C" {
 #define FALSE 0
 #ifndef Bool
 #define Bool char
+//#define csPin GPIO_PIN_14
+//#define SPI_CS_GPIO_Port GPIOD
 #endif
 // typedef enum { FALSE = 0, TRUE = !FALSE } bool;
 
 /// @endcond
 
 /**
- * @struct SdkDate
- * @brief SDK version update time
- */
-struct SdkDate {
-    uint8_t year;
-    uint8_t month;
-    uint8_t day;
-    uint16_t version;
-} __attribute__ ((packed));  // 8bit align
-
-/**
  * @struct SdkInfo
  * @brief Basic information of the sdk
  */
+struct SdkData {
+    uint8_t year;
+    uint8_t month;
+    uint8_t day;
+    uint8_t version;
+};
+
 union SdkInfo {
-    uint8_t sdkVersion[5]; /**<Sdk version */
-    struct SdkDate sdkInfo;
+    unsigned long sdkVersion; /**<Sdk version */
+    struct SdkData sdkInfo;
 };
 
 /**
@@ -253,6 +252,9 @@ typedef void (*STOP_HANDLE)(void);                                   /**<Callbac
  * @struct ArducamCamera
  * @brief Camera drive interface and information
  */
+//typedef enum{
+//	csPin = 0,
+//} csPin;
 
 typedef struct {
     int csPin;                                      /**< CS pin */
@@ -291,8 +293,6 @@ struct CameraOperations {
     CamStatus (*setAutoWhiteBalanceMode)(ArducamCamera*, CAM_WHITE_BALANCE);
     CamStatus (*setColorEffect)(ArducamCamera*, CAM_COLOR_FX);
     CamStatus (*setAutoFocus)(ArducamCamera*, uint8_t);
-    uint8_t   (*getAutoFocusSta)(ArducamCamera*);
-    CamStatus (*setManualFocus)(ArducamCamera*, uint16_t);
     CamStatus (*setSaturation)(ArducamCamera*, CAM_STAURATION_LEVEL);
     CamStatus (*setEV)(ArducamCamera*, CAM_EV_LEVEL);
     CamStatus (*setContrast)(ArducamCamera*, CAM_CONTRAST_LEVEL);
@@ -514,28 +514,6 @@ CamStatus setAutoFocus(ArducamCamera* camera, uint8_t val);
 
 //**********************************************
 //!
-//! @brief Get auto focus status
-//!
-//! @return Return 0x10：focus is finished
-//!
-//! @note Only `5MP` cameras support auto focus control
-//**********************************************
-uint8_t getAutoFocusSta(ArducamCamera* camera) ;
-
-//**********************************************
-//!
-//! @brief Set manual focus mode
-//!
-//! @param  value of VCM code
-//!
-//! @return Return operation status
-//!
-//! @note Only `5MP` cameras support maunal focus control
-//**********************************************
-CamStatus setManualFocus(ArducamCamera* camera,uint16_t val);
-
-//**********************************************
-//!
 //! @brief Set saturation level
 //!
 //! @param   camera ArducamCamera instance
@@ -692,13 +670,20 @@ void lowPowerOff(ArducamCamera* camera);
 //**********************************************
 uint8_t cameraHeartBeat(ArducamCamera* camera);
 
+
+void cameraCsHigh ( ArducamCamera *camera );
+void cameraCsLow ( ArducamCamera *camera );
+
 typedef enum { Camera_uninit = 0, Camera_init, Camera_open, Camera_close } CameraStatus;
 
-typedef struct {
+struct ClassCamera {
     ArducamCamera cam;
     CameraStatus status;
-} ClassCamera;
-
+};
+/*
+extern SPI_HandleTypeDef hspi1;			// External spi configuration
+extern IWDG_HandleTypeDef hiwdg;
+*/
 #ifdef __cplusplus
 }
 #endif

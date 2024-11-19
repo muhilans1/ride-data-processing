@@ -11,7 +11,7 @@
 #ifndef __SMARTSPICAM_H
 #define __SMARTSPICAM_H
 
-#include "arducam_camera.h"
+#include <ArducamCamera.h>
 
 #ifdef __cplusplus
 extern "C" {
